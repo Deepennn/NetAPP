@@ -2,12 +2,14 @@ package com.netapp.device.router;
 
 import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
-import com.netapp.packet.*;
 import com.netapp.device.NetIface;
+import com.netapp.packet.Data;
+import com.netapp.packet.Ethernet;
+import com.netapp.packet.ICMP;
+import com.netapp.packet.IPv4;
 
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Map;
+import java.util.Objects;
 
 public class Router extends NetDevice {
 
@@ -36,23 +38,27 @@ public class Router extends NetDevice {
         }
 
         IPv4 ipPacket = (IPv4) etherPacket.getPayload();
-        System.out.println(this.hostname + " is handling IP packet:" + ipPacket);
+        System.out.println(this.hostname + " is handling IP packet: " + ipPacket);
 
-        //TODO: CHKSUM
-//        int origCksum = ipPacket.getChecksum();
-//        int calcCksum = ipPacket.calculateChecksum(ipPacket.toString());
-//        if (origCksum != calcCksum) {
-//            return;
-//        }
+        // 检验校验和
+        int origCksum = ipPacket.getChecksum();
+        ipPacket.updateChecksum();
+        int calcCksum = ipPacket.getChecksum();
+        if (origCksum != calcCksum) {
+            return;
+        }
 
+        // TTL-1
         ipPacket.setTtl((ipPacket.getTtl() - 1));
         if (0 == ipPacket.getTtl()) {
             this.sendICMPPacket(etherPacket, inIface, 11, 0, false);
             return;
         }
 
-        ipPacket.resetChecksum();
+        // 更新校验和
+        ipPacket.updateChecksum();
 
+        // 检查数据包的目的 IP 是否为接口 IP 之一
         for (Iface iface : this.interfaces.values()) {
             if (Objects.equals(ipPacket.getDestinationIP(), ((NetIface) iface).getIpAddress())) {
                 byte protocol = ipPacket.getProtocol();
@@ -67,6 +73,7 @@ public class Router extends NetDevice {
             }
         }
 
+        // 检查路由表并转发
         this.forwardIPPacket(etherPacket, inIface);
     }
 
@@ -83,7 +90,7 @@ public class Router extends NetDevice {
             return;
         }
         IPv4 ipPacket = (IPv4) etherPacket.getPayload();
-        System.out.println(this.hostname + " is forwarding IP packet:"  + ipPacket);
+        System.out.println(this.hostname + " is forwarding IP packet: "  + ipPacket);
 
         // 获取目的 IP
         String dstIp = ipPacket.getDestinationIP();
@@ -140,10 +147,13 @@ public class Router extends NetDevice {
         Ethernet ether = new Ethernet();
         IPv4 ip = new IPv4();
         ICMP icmp = new ICMP();
-        Data data = new Data();
+        Data data = new Data(ICMP.getMessage(type,code));
         ether.setPayload(ip);
         ip.setPayload(icmp);
         icmp.setPayload(data);
+
+        // 更新校验和
+        icmp.updateChecksum();
 
         ether.setEtherType(Ethernet.TYPE_IPv4);
 
@@ -166,6 +176,11 @@ public class Router extends NetDevice {
         // 在 ICMP Echo 回应中：源 IP 是上一次请求的接收方主机的 IP 地址
         ip.setSourceIP(echo ? ipPacket.getDestinationIP() : ((NetIface)inIface).getMacAddress());
 
+        // 更新校验和
+        ip.updateChecksum();
+
+        System.out.println(this.hostname + " is sending ICMP packet:" + ether);
+
         // echo 是返回原子网
         ether.setSourceMAC(((NetIface)inIface).getMacAddress());
 
@@ -184,7 +199,6 @@ public class Router extends NetDevice {
         } else
             ether.setDestinationMAC(arpEntry.getMac());
 
-        System.out.println(this.hostname + " is sending ICMP packet:" + ether);
         this.sendPacket(ether, outIface);
     }
 
@@ -196,6 +210,7 @@ public class Router extends NetDevice {
         this.routeTable = routeTable;
     }
 
+    // TODO: LOAD_TEST
     /**
      * 从文件加载新的路由表。
      * @param routeTableFile 包含路由表的文件名

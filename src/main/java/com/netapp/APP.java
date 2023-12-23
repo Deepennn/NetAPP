@@ -8,12 +8,13 @@ import com.netapp.device.router.Router;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class APP {
 
     /**----------------------------------CONSTANTS-------------------------------------*/
 
-    // TOPO:
+    // NETWORK TOPO:
     // h1   <===>         r1        <===> h2
     // h1_i <---> [ r1_i1 , r1_i2 ] <---> h2_i
 
@@ -115,9 +116,34 @@ public class APP {
         /**----------------------------------------------------------------------------*/
 
         /**----------------------------------模拟发包-------------------------------------*/
-        h1.sendIPPacket(H2_I_IP,"h1: hi!");
 
-//        h2.sendIPPacket(H1_I_IP,"h2: hello!");
+        // 创建Scanner对象
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(
+                "    WELCOME TO NETLAYER!\n" +
+                "    YOU ARE NOW `h1` IN THE NETWORK TOPO AS BELOW:\n"
+                );
+        System.out.println(
+                "    ```````````````````NETWORK TOPO`````````````````\n" +
+                "    h1   <===>         r1        <===> h2\n" +
+                "    h1_i <---> [ r1_i1 , r1_i2 ] <---> h2_i\n" +
+                "    ^                                      \n" +
+                "   ```````````````````````````````````````````````````"
+                );
+        System.out.print(
+                "    TRY SEND A MESSAGE TO `h2`!\n" +
+                "    YOUR(`h1`) MESSAGE:"
+        );
+        // 读取用户输入的 MESSAGE
+        String message = scanner.nextLine();
+        System.out.println("/**```````````````````YOUR MESSAGE IS SENDING!````````````````*/");
+        // h1 -> h2
+        h1.sendIPPacket(H2_I_IP,message);
+        // h2 -> h1
+//        h2.sendIPPacket(H1_I_IP,message);
+
+        // 关闭Scanner
+        scanner.close();
         /**----------------------------------------------------------------------------*/
 
     }

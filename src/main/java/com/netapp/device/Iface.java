@@ -18,7 +18,8 @@ public class Iface
         this.outputQueue = new LinkedBlockingQueue<>();
     }
 
-    // putters: 放入
+    // putters:
+    // 放入
     public void receivePacket(Ethernet etherPacket) {
         System.out.println(this.iName + " is receiving Ether packet: " + etherPacket);
         try {
@@ -37,14 +38,10 @@ public class Iface
         }
     }
 
-    // takers: 取出
+    // pollers:
+    // 取出
     public Ethernet getInputPacket() {
-        try {
-            return inputQueue.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return inputQueue.poll();
     }
 
     public Ethernet getOutputPacket() {

@@ -4,13 +4,12 @@ import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
 import com.netapp.device.NetIface;
 import com.netapp.device.router.ArpEntry;
-import com.netapp.packet.*;
+import com.netapp.packet.Data;
+import com.netapp.packet.Ethernet;
+import com.netapp.packet.ICMP;
+import com.netapp.packet.IPv4;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Host extends NetDevice {
 
@@ -53,17 +52,20 @@ public class Host extends NetDevice {
         }
 
         IPv4 ipPacket = (IPv4) etherPacket.getPayload();
-        System.out.println(this.hostname + " is handling IP packet:" + ipPacket);
+        System.out.println(this.hostname + " is handling IP packet: " + ipPacket);
 
-        //TODO: CHKSUM
-//        int origCksum = ipPacket.getChecksum();
-//        int calcCksum = ipPacket.calculateChecksum(ipPacket.toString());
-//        if (origCksum != calcCksum) {
-//            return;
-//        }
+        // 检验校验和
+        int origCksum = ipPacket.getChecksum();
+        ipPacket.updateChecksum();
+        int calcCksum = ipPacket.getChecksum();
+        if (origCksum != calcCksum) {
+            return;
+        }
 
-        System.out.println(this.hostname + " accepted IP packet:" + ipPacket);
-        System.out.println("/**----------------------------------------------------------------*/");
+        String message = ((Data)ipPacket.getPayload()).getData();
+
+        System.out.println(this.hostname + " accepted message: " + message);
+        System.out.println("/**````````````````````````````````````````````````````````````*/");
 
     }
 
@@ -89,7 +91,10 @@ public class Host extends NetDevice {
         // 在 ICMP Echo 回应中：源 IP 是上一次请求的接收方主机的 IP 地址
         ip.setSourceIP(((NetIface)outIface).getIpAddress());
 
-        System.out.println(this.hostname + " is sending IP packet:" + ip);
+        // 更新校验和
+        ip.updateChecksum();
+
+        System.out.println(this.hostname + " is sending IP packet: " + ip);
 
         ether.setSourceMAC(((NetIface)outIface).getMacAddress());
 
@@ -130,10 +135,13 @@ public class Host extends NetDevice {
         Ethernet ether = new Ethernet();
         IPv4 ip = new IPv4();
         ICMP icmp = new ICMP();
-        Data data = new Data();
+        Data data = new Data(ICMP.getMessage(type,code));
         ether.setPayload(ip);
         ip.setPayload(icmp);
         icmp.setPayload(data);
+
+        // 更新校验和
+        icmp.updateChecksum();
 
         ether.setEtherType(Ethernet.TYPE_IPv4);
 
@@ -153,6 +161,11 @@ public class Host extends NetDevice {
 
         // 在 ICMP Echo 回应中：源 IP 是上一次请求的接收方主机的 IP 地址
         ip.setSourceIP(echo ? ipPacket.getDestinationIP() : ((NetIface)inIface).getMacAddress());
+
+        // 更新校验和
+        ip.updateChecksum();
+
+        System.out.println(this.hostname + " is sending ICMP packet:" + ether);
 
         ether.setSourceMAC(((NetIface)inIface).getMacAddress());
 
@@ -177,7 +190,6 @@ public class Host extends NetDevice {
         } else
             ether.setDestinationMAC(arpEntry.getMac());
 
-        System.out.println(this.hostname + " is sending ICMP packet:" + ether);
         this.sendPacket(ether, outIface);
     }
 

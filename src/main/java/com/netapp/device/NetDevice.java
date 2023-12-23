@@ -179,21 +179,21 @@ public abstract class NetDevice extends Device
                     sendPacket(atomicEtherPacket.get(), atomicIface.get());
                     Thread.sleep(1000);
                     if (atomicCache.get().lookup(dstIp) != null) {
-                        System.out.println(hostname + ": Found it: " + dstIp);
+                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
                         return;
                     }
                     System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
                     sendPacket(atomicEtherPacket.get(), atomicIface.get());
                     Thread.sleep(1000);
                     if (atomicCache.get().lookup(dstIp) != null) {
-                        System.out.println(hostname + ": Found it: " + dstIp);
+                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
                         return;
                     }
                     System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
                     sendPacket(atomicEtherPacket.get(), atomicIface.get());
                     Thread.sleep(1000);
                     if (atomicCache.get().lookup(dstIp) != null) {
-                        System.out.println(hostname + ": Found it: " + dstIp);
+                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
                         return;
                     }
 
@@ -215,7 +215,7 @@ public abstract class NetDevice extends Device
     }
 
 
-    // TODO: loadtest
+    // TODO: LOAD_TEST
     /**
      * 从文件加载新的 ARP 缓存。
      * @param arpCacheFile 包含 ARP 缓存的文件名

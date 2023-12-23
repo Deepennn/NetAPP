@@ -26,10 +26,12 @@ public class Ethernet extends Packet {
         super();
     }
 
-    @Override
-    public void resetChecksum() {
-        // 在这里模拟更新校验和的操作
-        checksum = calculateChecksum(this.toString());
+    /**
+     *  更新校验和
+     */
+    public void updateChecksum(){
+        this.checksum = 0;
+        this.setChecksum(this.calculateChecksum(this.toString()));
     }
 
     /**
@@ -81,4 +83,5 @@ public class Ethernet extends Packet {
                 ", payload=" + payload +
                 '}';
     }
+
 }

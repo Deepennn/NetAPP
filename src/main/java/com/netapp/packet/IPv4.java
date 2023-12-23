@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IPv4 extends Packet {
+
+    public static final String BROADCAST_IP = "255.255.255.255";
+
     public static final byte PROTOCOL_ICMP = 0x1;
     public static Map<Byte, Class<? extends IPacket>> protocolClassMap;
 
@@ -27,11 +30,21 @@ public class IPv4 extends Packet {
         this.version = 4;
     }
 
-    public void resetChecksum() {
-        // 在这里模拟更新校验和的操作
-        checksum = calculateChecksum(this.toString());
-        super.resetChecksum();
+    /**
+     *  更新校验和
+     */
+    public void updateChecksum(){
+        this.checksum = 0;
+        this.setChecksum(this.calculateChecksum(this.toString()));
     }
+
+    /**
+     * @return 如果 IP 数据包是广播包，则返回true；否则返回false
+     */
+    public boolean isBroadcast() {
+        return destinationIP.equals(BROADCAST_IP);
+    }
+
 
     /**
      * 接受一个 IPv4 地址字符串，格式为 xxx.xxx.xxx.xxx，例如 192.168.0.1，
@@ -131,4 +144,5 @@ public class IPv4 extends Packet {
                 ", payload=" + payload +
                 '}';
     }
+
 }

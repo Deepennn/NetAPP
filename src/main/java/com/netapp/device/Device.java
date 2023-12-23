@@ -36,11 +36,12 @@ public abstract class Device implements Runnable
 
     @Override
     public void run() {
-
         while (true) {
             interfaces.forEach((iName, iface) -> {
                 Ethernet etherPacket = iface.getInputPacket();
-                handlePacket(etherPacket, iface);
+                if(null != etherPacket){
+                    handlePacket(etherPacket, iface);
+                }
             });
         }
 
