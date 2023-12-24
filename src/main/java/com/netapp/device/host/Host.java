@@ -103,10 +103,12 @@ public class Host extends NetDevice {
         if (isInSubnet(dstIp, outIface))
         { // 如果属于自己所属子网则直接设置目的 MAC 为目的地 MAC
             nextHop = dstIp;
+            System.out.println(this.hostname + " found dstIp is in the subnet, nexHop: " + nextHop);
         }
         else
         { // 否则将其设置为网关的 MAC
             nextHop = this.gatewayAddress;
+            System.out.println(this.hostname + " found dstIp is not in the subnet, nexHop: " + nextHop);
         }
 
         ArpEntry arpEntry = this.atomicCache.get().lookup(nextHop);

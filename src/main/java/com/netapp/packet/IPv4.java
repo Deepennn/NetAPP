@@ -31,7 +31,7 @@ public class IPv4 extends Packet {
     }
 
     /**
-     *  更新校验和
+     *  更新校验和：
      */
     public void updateChecksum(){
         this.checksum = 0;
