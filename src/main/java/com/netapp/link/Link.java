@@ -27,4 +27,11 @@ public class Link {
     public void setI2(Iface i2) {
         this.i2 = i2;
     }
+
+    @Override
+    public String toString() {
+        return i1.getiName() +
+                " <---> " +
+                i2.getiName();
+    }
 }

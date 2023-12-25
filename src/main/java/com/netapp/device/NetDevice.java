@@ -11,6 +11,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.netapp.config.Constant.ARP_CACHE_PREFFIX;
+import static com.netapp.config.Constant.ARP_CACHE_SUFFIX;
+
 public abstract class NetDevice extends Device
 {
 
@@ -30,6 +33,7 @@ public abstract class NetDevice extends Device
         super(hostname, interfaces);
         this.atomicCache = new AtomicReference<>(new ArpCache());
         this.outputQueueMap = new HashMap<>();
+        this.loadArpCache(ARP_CACHE_PREFFIX + this.hostname + ARP_CACHE_SUFFIX);
     }
 
     /**
@@ -222,9 +226,8 @@ public abstract class NetDevice extends Device
     }
 
 
-    // TODO: LOAD_TEST
     /**
-     * 从文件加载新的 ARP 缓存。
+     * 从文件加载 ARP 缓存。
      * @param arpCacheFile 包含 ARP 缓存的文件名
      */
     public void loadArpCache(String arpCacheFile) {
@@ -233,9 +236,9 @@ public abstract class NetDevice extends Device
             System.exit(1);
         }
 
-        System.out.println("Loaded static ARP cache");
+        System.out.println(this.hostname + " loaded static ARP cache");
         System.out.println("----------------------------------");
-        System.out.println(this.atomicCache.get().toString());
+        System.out.print(this.atomicCache.get().toString());
         System.out.println("----------------------------------");
     }
 

@@ -6,6 +6,7 @@ import java.util.Map;
 public class IPv4 extends Packet {
 
     public static final String BROADCAST_IP = "255.255.255.255";
+    public static final String DEFAULT_IP = "0.0.0.0";
 
     public static final byte PROTOCOL_DEFAULT = 0x0;
     public static final byte PROTOCOL_ICMP = 0x1;

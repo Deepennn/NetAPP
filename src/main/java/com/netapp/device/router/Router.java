@@ -8,6 +8,9 @@ import com.netapp.packet.*;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.netapp.config.Constant.ROUTE_TABLE_PREFFIX;
+import static com.netapp.config.Constant.ROUTE_TABLE_SUFFIX;
+
 public class Router extends NetDevice {
 
     /** 路由表 */
@@ -21,6 +24,7 @@ public class Router extends NetDevice {
     public Router(String hostname, Map<String, Iface> interfaces) {
         super(hostname, interfaces);
         routeTable = new RouteTable();
+        this.loadRouteTable(ROUTE_TABLE_PREFFIX + this.hostname + ROUTE_TABLE_SUFFIX);
     }
 
     /**
@@ -118,7 +122,7 @@ public class Router extends NetDevice {
 
         // 如果没有网关，那么下一跳是 IP 目的地，设置目的 MAC 的时候可以直接设置目的地的MAC，否则设置网关的MAC
         String nextHop = bestMatch.getGatewayAddress();
-        if (null == nextHop) {
+        if (IPv4.DEFAULT_IP.equals(nextHop)) {
             nextHop = dstIp;
         }
 
@@ -187,7 +191,7 @@ public class Router extends NetDevice {
         ether.setSourceMAC(((NetIface)inIface).getMacAddress());
 
         String nextHop = bestMatch.getGatewayAddress();
-        if (null == nextHop) {
+        if (IPv4.DEFAULT_IP.equals(nextHop)) {
             nextHop = dstIp;
         }
 
@@ -212,9 +216,8 @@ public class Router extends NetDevice {
         this.routeTable = routeTable;
     }
 
-    // TODO: LOAD_TEST
     /**
-     * 从文件加载新的路由表。
+     * 从文件加载路由表。
      * @param routeTableFile 包含路由表的文件名
      */
     public void loadRouteTable(String routeTableFile) {
@@ -223,7 +226,7 @@ public class Router extends NetDevice {
             System.exit(1);
         }
 
-        System.out.println("Loaded static route table");
+        System.out.println(this.hostname + " loaded static route table");
         System.out.println("-------------------------------------------------");
         System.out.print(this.routeTable.toString());
         System.out.println("-------------------------------------------------");

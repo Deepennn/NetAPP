@@ -44,7 +44,7 @@ public class ArpCache
 
     public String toString()
     {
-        String result = "IP\t\tMAC\n";
+        String result = "IP\t\t\tMAC\n";
         for (ArpEntry entry : this.entries.values())
         { result += entry.toString() + "\n"; }
         return result;
@@ -123,7 +123,7 @@ public class ArpCache
             }
 
             // 向ARP缓存添加条目
-            this.insert(mac, ip);
+            this.insert(ip,mac);
         }
 
         // 关闭文件

@@ -118,7 +118,7 @@ public class RouteTable {
                 return " 警告：路由表为空";
             }
 
-            String result = "目标\t\t网关\t\t子网掩码\t\t接口\n";
+            String result = "目标IP\t\t网关IP\t\t子网掩码\t\t\t接口\n";
             for (RouteEntry entry : entries) {
                 result += entry.toString() + "\n";
             }
@@ -164,13 +164,14 @@ public class RouteTable {
 
             // 解析用于路由表项的字段
             String ipPattern = "(\\d+\\.\\d+\\.\\d+\\.\\d+)";
-            String ifacePattern = "([a-zA-Z0-9]+)";
+            String ifacePattern = "([a-zA-Z0-9_]+)";
             Pattern pattern = Pattern.compile(String.format(
                     "%s\\s+%s\\s+%s\\s+%s",
                     ipPattern, ipPattern, ipPattern, ifacePattern));
             Matcher matcher = pattern.matcher(line);
             if (!matcher.matches() || matcher.groupCount() != 4) {
                 System.err.println("路由表文件中存在无效条目");
+                System.out.println(line);
                 try {
                     reader.close();
                 } catch (IOException f) {
