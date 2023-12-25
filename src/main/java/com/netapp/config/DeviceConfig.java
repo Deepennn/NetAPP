@@ -1,17 +1,13 @@
 package com.netapp.config;
 
 public interface DeviceConfig {
+    // file
     String ARP_CACHE_PREFFIX = "src/main/resources/config/arp_cache/";
     String ARP_CACHE_SUFFIX = ".ac";
     String ROUTE_TABLE_PREFFIX = "src/main/resources/config/route_table/";
     String ROUTE_TABLE_SUFFIX = ".rt";
     String TOPO_PREFFIX = "src/main/resources/config/topo/";
     String TOPO_SUFFIX = ".tp";
-
-    // NETWORK TOPO:
-    // h1   <===>         r1        <===> h2
-    // h1_i <---> [ r1_i1 , r1_i2 ] <---> h2_i
-    String NET_NAME = "h1_r1_h2";
 
     // r1
     String R1_HOSTNAME = "r1";
