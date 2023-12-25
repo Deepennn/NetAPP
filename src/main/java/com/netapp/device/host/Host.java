@@ -4,10 +4,7 @@ import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
 import com.netapp.device.NetIface;
 import com.netapp.device.router.ArpEntry;
-import com.netapp.packet.Data;
-import com.netapp.packet.Ethernet;
-import com.netapp.packet.ICMP;
-import com.netapp.packet.IPv4;
+import com.netapp.packet.*;
 
 import java.util.Map;
 
@@ -62,9 +59,17 @@ public class Host extends NetDevice {
             return;
         }
 
-        String message = ((Data)ipPacket.getPayload()).getData();
+        byte protocol = ipPacket.getProtocol();
+//                System.out.println("ipPacket protocol: " + protocol);
+        if (protocol == IPv4.PROTOCOL_ICMP) {
+            ICMP icmp = (ICMP) ipPacket.getPayload();
+            System.out.println(this.hostname + " accepted message: " + icmp);
+        }
+        else if (protocol == IPv4.PROTOCOL_DEFAULT){
+            Data data = (Data) ipPacket.getPayload();
+            System.out.println(this.hostname + " accepted message: " + data.getData());
+        }
 
-        System.out.println(this.hostname + " accepted message: " + message);
         System.out.println("/**````````````````````````````````````````````````````````````*/");
 
     }
@@ -73,7 +78,7 @@ public class Host extends NetDevice {
      * 发送 IP 数据包。
      * @param message 模拟的IP数据包载荷
      */
-    public void sendIPPacket(String dstIp, String message) {
+    public void sendIPPacket(String dstIp, String message, int ttl) {
         Ethernet ether = new Ethernet();
         IPv4 ip = new IPv4();
         Data data = new Data(message);
@@ -82,8 +87,8 @@ public class Host extends NetDevice {
 
         ether.setEtherType(Ethernet.TYPE_IPv4);
 
-        byte d = 64;
-        ip.setTtl(d);
+//        int ttl = 64;
+        ip.setTtl(ttl);
         ip.setDestinationIP(dstIp);
 
         Iface outIface = this.getDefaultInterface();

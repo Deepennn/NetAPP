@@ -7,7 +7,10 @@ public class IPv4 extends Packet {
 
     public static final String BROADCAST_IP = "255.255.255.255";
 
+    public static final byte PROTOCOL_DEFAULT = 0x0;
     public static final byte PROTOCOL_ICMP = 0x1;
+    public static final byte PROTOCOL_TCP = 0x6;
+    public static final byte PROTOCOL_UDP = 0x11;
     public static Map<Byte, Class<? extends IPacket>> protocolClassMap;
 
     static {

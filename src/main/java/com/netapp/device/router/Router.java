@@ -3,10 +3,7 @@ package com.netapp.device.router;
 import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
 import com.netapp.device.NetIface;
-import com.netapp.packet.Data;
-import com.netapp.packet.Ethernet;
-import com.netapp.packet.ICMP;
-import com.netapp.packet.IPv4;
+import com.netapp.packet.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -62,12 +59,17 @@ public class Router extends NetDevice {
         for (Iface iface : this.interfaces.values()) {
             if (Objects.equals(ipPacket.getDestinationIP(), ((NetIface) iface).getIpAddress())) {
                 byte protocol = ipPacket.getProtocol();
-                System.out.println("ipPacket protocol: " + protocol);
+//                System.out.println("ipPacket protocol: " + protocol);
                 if (protocol == IPv4.PROTOCOL_ICMP) {
                     ICMP icmp = (ICMP) ipPacket.getPayload();
+                    System.out.println(this.hostname + " accepted message: " + icmp);
                     if (icmp.getIcmpType() == 8) {
                         this.sendICMPPacket(etherPacket, inIface, 0, 0, true);
                     }
+                }
+                else if (protocol == IPv4.PROTOCOL_DEFAULT){
+                    Data data = (Data) ipPacket.getPayload();
+                    System.out.println(this.hostname + " accepted message: " + data.getData());
                 }
                 return;
             }
