@@ -99,12 +99,17 @@ public class APP {
         // 配置Arp缓存
         // 格式: 目的IP、目的MAC
         // 如果一个主机向自己所在的子网外发数据包，那么 MAC 应该设定为网关的 MAC ，实际上网关的 MAC 是需要先 ARP 得到的
-//        h1.getAtomicCache().get().insert(R1_I1_IP, R1_I1_MAC);
+        h1.getAtomicCache().get().insert(R1_I1_IP, R1_I1_MAC);
+        h1.getAtomicCache().get().insert(H1_I_IP, H1_I_MAC);
 
-        r1.getAtomicCache().get().insert(H2_I_IP, H2_I_MAC);
+//        r1.getAtomicCache().get().insert(H2_I_IP, H2_I_MAC);
         r1.getAtomicCache().get().insert(H1_I_IP, H1_I_MAC);
+        r1.getAtomicCache().get().insert(R1_I1_IP, R1_I1_MAC);
+        r1.getAtomicCache().get().insert(R1_I2_IP, R1_I2_MAC);
 
         h2.getAtomicCache().get().insert(R1_I2_IP, R1_I2_MAC);
+        h2.getAtomicCache().get().insert(H2_I_IP, H2_I_MAC);
+
 
         /**----------------------------------------------------------------------------*/
 
@@ -141,6 +146,8 @@ public class APP {
         h1.sendIPPacket(H2_I_IP,message);
         // h2 -> h1
 //        h2.sendIPPacket(H1_I_IP,message);
+        // h1 -> r1
+//        h1.sendIPPacket(R1_I1_IP,message);
 
         // 关闭Scanner
         scanner.close();

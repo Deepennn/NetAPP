@@ -9,11 +9,9 @@ public class ARP extends Packet {
     public static final short OP_REQUEST = 0x1;
     public static final short OP_REPLY = 0x2;
 
-
-
     protected short hardwareType;
     protected short protocolType;
-    protected short opCode;
+    protected short opCode; // 1->REQ : 2-> REPLY
 
     protected String senderHardwareAddress;
     protected String senderProtocolAddress;

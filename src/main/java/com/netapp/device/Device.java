@@ -38,8 +38,8 @@ public abstract class Device implements Runnable
     public void run() {
         while (true) {
             interfaces.forEach((iName, iface) -> {
-                Ethernet etherPacket = iface.getInputPacket();
-                if(null != etherPacket){
+                if(iface.peekInputPacket() != null){
+                    Ethernet etherPacket = iface.pollInputPacket();
                     handlePacket(etherPacket, iface);
                 }
             });
@@ -101,7 +101,7 @@ public abstract class Device implements Runnable
      * @return 如果成功发送数据包，则为 true；否则为 false
      */
     public void sendPacket(Ethernet etherPacket, Iface iface)
-    { iface.sendPacket(etherPacket); }
+    { iface.putOutputPacket(etherPacket); }
 
     /**
      * 处理接收到的以太网数据包的抽象方法。

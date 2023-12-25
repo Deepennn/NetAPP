@@ -51,15 +51,14 @@ public class LinkLayer  implements Runnable{
         while(true){
             // 轮巡 interfaces
             for (Iface iface : interfaces) {
-                Ethernet etherPacket = iface.getOutputPacket();
-                if(etherPacket != null){
-                    // 按 links 放入对应 inputQueue
-                    List<Iface> lkdIfaces = findLkdIfaces(iface);
+                if(iface.peekOutputPacket() != null){
+                    Ethernet etherPacket = iface.pollOutputPacket();
+                    List<Iface> lkdIfaces = findLkdIfaces(iface); // 按 links 放入对应 inputQueue
                     if(!lkdIfaces.isEmpty()){
                         if(etherPacket.isBroadcast()){ // 是广播以太网数据包
                             // 广播相连接口
                             for (Iface lkdIface : lkdIfaces){
-                                lkdIface.receivePacket(etherPacket);
+                                lkdIface.putInputPacket(etherPacket);
                             }
                         }else{
                             // 查找 MAC 匹配的接口
@@ -67,7 +66,7 @@ public class LinkLayer  implements Runnable{
                                 if( lkdIface instanceof NetIface ){
                                     // lkdIface 是网络层设备
                                     if(((NetIface)lkdIface).getMacAddress().equals(etherPacket.getDestinationMAC())){
-                                        lkdIface.receivePacket(etherPacket);
+                                        lkdIface.putInputPacket(etherPacket);
                                     }
                                     else {
                                         System.out.println(
@@ -80,7 +79,7 @@ public class LinkLayer  implements Runnable{
                                 }
                                 else{
                                     // lkdIface 是链路层交换机
-                                    lkdIface.receivePacket(etherPacket);
+                                    lkdIface.putInputPacket(etherPacket);
                                 }
                             }
                         }

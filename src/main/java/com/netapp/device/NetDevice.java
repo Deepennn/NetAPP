@@ -7,6 +7,7 @@ import com.netapp.packet.Ethernet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,7 +18,7 @@ public abstract class NetDevice extends Device
     protected AtomicReference<ArpCache> atomicCache;
 
     /** 为ARP设置的输出缓存区 （不知道目的 MAC 的目的 IP） --> （对应数据包队列）  */
-    protected HashMap<String, Queue> outputQueueMap;
+    protected HashMap<String, BlockingQueue<Ethernet>> outputQueueMap;
 
     /**
      * 创建设备。
@@ -27,7 +28,7 @@ public abstract class NetDevice extends Device
     public NetDevice(String hostname, Map<String, Iface> interfaces)
     {
         super(hostname, interfaces);
-        this.atomicCache = new AtomicReference(new ArpCache());
+        this.atomicCache = new AtomicReference<>(new ArpCache());
         this.outputQueueMap = new HashMap<>();
     }
 
@@ -95,15 +96,14 @@ public abstract class NetDevice extends Device
                 String srcIp = arpPacket.getSenderProtocolAddress();
                 atomicCache.get().insert(srcIp, arpPacket.getSenderHardwareAddress());
 
-                Queue packetsToSend = outputQueueMap.get(srcIp); // outputQueueMap 中目的 IP 是响应源 IP 的数据包队列
+                Queue<Ethernet> packetsToSend = outputQueueMap.get(srcIp); // outputQueueMap 中目的 IP 是响应源 IP 的数据包队列
                 while(packetsToSend != null && packetsToSend.peek() != null){
-                    Ethernet packet = (Ethernet)packetsToSend.poll();
+                    Ethernet packet = packetsToSend.poll();
                     packet.setDestinationMAC(arpPacket.getSenderHardwareAddress());
                     this.sendPacket(packet, inIface);
                 }
-
-            } else
-                return;
+            }
+            return;
         }
 
         // ARP 请求数据包
@@ -150,9 +150,9 @@ public abstract class NetDevice extends Device
         arp.setTargetHardwareAddress(null);
         arp.setTargetProtocolAddress(dstIp);
 
-        final AtomicReference<Ethernet> atomicEtherPacket = new AtomicReference(new Ethernet());
-        final AtomicReference<Iface> atomicIface = new AtomicReference(outIface);
-        final AtomicReference<Ethernet> atomicInPacket = new AtomicReference(etherPacket);
+        final AtomicReference<Ethernet> atomicEtherPacket = new AtomicReference<>(new Ethernet());
+        final AtomicReference<Iface> atomicIface = new AtomicReference<>(outIface);
+        final AtomicReference<Ethernet> atomicInPacket = new AtomicReference<>(etherPacket);
 
         atomicEtherPacket.get().setEtherType(Ethernet.TYPE_ARP);
         atomicEtherPacket.get().setSourceMAC(((NetIface)outIface).getMacAddress());
@@ -162,13 +162,20 @@ public abstract class NetDevice extends Device
 
 
         if (!outputQueueMap.containsKey(dstIp)) {
-            outputQueueMap.put(dstIp, new LinkedBlockingQueue());
+            outputQueueMap.put(dstIp, new LinkedBlockingQueue<>());
             System.out.println(hostname + " is making a new buffer queue for: " + dstIp);
         }
-        Queue nextHopQueue = outputQueueMap.get(dstIp);
-        nextHopQueue.add(etherPacket);
+        BlockingQueue<Ethernet> nextHopQueue = outputQueueMap.get(dstIp);
 
-        final AtomicReference<Queue> atomicQueue = new AtomicReference(nextHopQueue); // 线程安全
+        // 放入（不阻塞）
+        try {
+            nextHopQueue.put(etherPacket);
+        } catch (InterruptedException e) {
+            System.out.println(this.hostname + " blocked a sending Ether packet: " + etherPacket);
+            e.printStackTrace();
+        }
+
+        final AtomicReference<BlockingQueue<Ethernet>> atomicQueue = new AtomicReference<BlockingQueue<Ethernet>>(nextHopQueue); // 线程安全
 
         Thread waitForReply = new Thread(new Runnable() {
 
@@ -182,23 +189,23 @@ public abstract class NetDevice extends Device
                         System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
                         return;
                     }
-                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
-                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
-                    Thread.sleep(1000);
-                    if (atomicCache.get().lookup(dstIp) != null) {
-                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
-                        return;
-                    }
-                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
-                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
-                    Thread.sleep(1000);
-                    if (atomicCache.get().lookup(dstIp) != null) {
-                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
-                        return;
-                    }
+//                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
+//                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
+//                    Thread.sleep(1000);
+//                    if (atomicCache.get().lookup(dstIp) != null) {
+//                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
+//                        return;
+//                    }
+//                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
+//                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
+//                    Thread.sleep(1000);
+//                    if (atomicCache.get().lookup(dstIp) != null) {
+//                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
+//                        return;
+//                    }
 
                     // 都发了 3 次了，实在是真的是找不着 MAC，那就放弃吧，发送一个`目的主机不可达`的 ICMP
-                    System.out.println(hostname + ": Not found:" + dstIp);
+                    System.out.println(hostname + ": Not found: " + dstIp);
 
                     while (atomicQueue.get() != null && atomicQueue.get().peek() != null) {
                         atomicQueue.get().poll();
