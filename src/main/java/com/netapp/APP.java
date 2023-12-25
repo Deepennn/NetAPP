@@ -9,19 +9,13 @@ import static com.netapp.config.DeviceConfig.*;
 
 public class APP {
     public static void main(String[] args) {
-
         /**----------------------------------SETUP-------------------------------------*/
-
         // 创建网络
         Net net = new Net(NET_NAME, DeviceFactory.provide());
-
         // 启动网络
         new Thread(net).start();
-
         /**----------------------------------------------------------------------------*/
-
         /**----------------------------------SEND-------------------------------------*/
-
         // 创建Scanner对象
         Scanner scanner = new Scanner(System.in);
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
