@@ -11,8 +11,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.netapp.config.Constant.ARP_CACHE_PREFFIX;
-import static com.netapp.config.Constant.ARP_CACHE_SUFFIX;
+import static com.netapp.config.DeviceConfig.ARP_CACHE_PREFFIX;
+import static com.netapp.config.DeviceConfig.ARP_CACHE_SUFFIX;
 
 public abstract class NetDevice extends Device
 {

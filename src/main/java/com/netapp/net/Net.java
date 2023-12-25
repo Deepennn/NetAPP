@@ -1,8 +1,10 @@
-package com.netapp.link;
+package com.netapp.net;
 
 import com.netapp.device.Device;
 import com.netapp.device.Iface;
 import com.netapp.device.NetIface;
+import com.netapp.device.host.Host;
+import com.netapp.link.Link;
 import com.netapp.packet.Ethernet;
 
 import java.io.BufferedReader;
@@ -16,32 +18,33 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.netapp.config.DeviceConfig.*;
+
 /**
  * 模拟链路层
  * */
-public class LinkLayer implements Runnable{
-
-    /** 拓扑图 */
-    private Topo topo;
+public class Net implements Runnable{
+    private String netname;  // 网络名
     private List<Link> links;  // 链路集合
     private Map<String,Device> devices;  // 设备集合
     private Map<String,Iface> interfaces;  // 接口集合
 
-    public LinkLayer() {
+    /** 网络拓扑图 */
+    private Topo topo;
+    /** 网络层服务 */
+    public Service service;
+
+    public Net(String netname, Map<String,Device> devices) {
+        this.netname = netname;
         this.links = new ArrayList<>();
-        this.devices = new HashMap<String, Device>();
-        this.interfaces = new HashMap<String, Iface>();
+        this.devices = devices;
+        this.interfaces = new HashMap<>();
+        for (Device device: devices.values()) {
+            interfaces.putAll(device.getInterfaces());
+        }
         this.topo = new Topo();
-    }
-
-    public void addDevice(String hostname, Device device){
-        devices.put(hostname,device);
-        interfaces.putAll(device.getInterfaces());
-    }
-
-    public void addLink(Iface i1, Iface i2){
-        Link link = new Link(i1, i2);
-        links.add(link);
+        this.service = new Service();
+        this.loadTopo(TOPO_PREFFIX + this.netname + TOPO_SUFFIX);
     }
 
     private List<Iface> findLkdIfaces(Iface i) {
@@ -59,6 +62,12 @@ public class LinkLayer implements Runnable{
 
     @Override
     public void run() {
+
+        for (Device device : devices.values()) {
+            // 创建、启动设备线程
+            new Thread(device).start();
+        }
+
         while(true){
             // 轮巡 interfaces
             for (Iface iface : interfaces.values()) {
@@ -81,7 +90,7 @@ public class LinkLayer implements Runnable{
                                     }
                                     else {
                                         System.out.println(
-                                                "`````````````````LinkLayer: " +
+                                                "`````````````````Net: " +
                                                 ((NetIface)lkdIface).getMacAddress() +
                                                 " != " +
                                                 etherPacket.getDestinationMAC()
@@ -118,31 +127,33 @@ public class LinkLayer implements Runnable{
         System.out.println("\n-------------------------------------------------");
     }
 
-    /**
-     * 根据接口名称获取接口。
-     * @param ifaceName 所需接口的名称
-     * @return 请求的接口；如果没有具有给定名称的接口，则为 null
-     */
-    public Iface getInterface(String ifaceName)
-    { return this.interfaces.get(ifaceName); }
-
-    @Override
-    public String toString() {
-        return "LinkLayer{" +
-                "links=" + links +
-                ", devices=" + devices +
-                ", interfaces=" + interfaces +
-                '}';
-    }
-
     public class Topo{
+
+        public void addDevice(String hostname, Device device){
+            devices.put(hostname,device);
+            interfaces.putAll(device.getInterfaces());
+        }
+
+        public void addLink(Iface i1, Iface i2){
+            Link link = new Link(i1, i2);
+            links.add(link);
+        }
+
+        /**
+         * 根据接口名称获取接口。
+         * @param ifaceName 所需接口的名称
+         * @return 请求的接口；如果没有具有给定名称的接口，则为 null
+         */
+        public Iface getInterface(String ifaceName)
+        { return interfaces.get(ifaceName); }
+
         /**
          * 从文件中加载拓扑图填充拓扑图。
          * @param filename 包含静态路由表的文件的名称
          * @param linklayer 与拓扑图相关联的链路层
          * @return 如果成功加载拓扑图则返回 true，否则返回 false
          */
-        public boolean load(String filename, LinkLayer linklayer) {
+        public boolean load(String filename, Net linklayer) {
             // 打开文件
             BufferedReader reader;
             try {
@@ -222,6 +233,23 @@ public class LinkLayer implements Runnable{
             } catch (IOException f) {
             }
             return true;
+        }
+    }
+
+    public class Service{
+        public void sendIPPacket(String hostname, String destIp, String message, int ttl){
+            Device device = devices.get(hostname);
+            if (device != null){
+                if(device instanceof Host){
+                    ((Host)device).sendIPPacket(destIp, message, ttl);
+                }
+                else{
+                    System.err.println("ERROR: THE SENDER IS NOT A HOST!");
+                }
+            }
+            else{
+                System.err.println("ERROR: THE SENDER DOES NOT EXISTS!");
+            }
         }
     }
 

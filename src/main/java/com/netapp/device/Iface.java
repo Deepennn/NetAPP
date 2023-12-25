@@ -20,7 +20,7 @@ public class Iface
 
     /**---------------------------------putters:放入（阻塞）-------------------------------------*/
 
-    // 由 LinkLayer 放入数据包
+    // 由 Net 放入数据包
     public void putInputPacket(Ethernet etherPacket) {
         System.out.println(this.iName + " is receiving Ether packet: " + etherPacket);
         try {
@@ -47,7 +47,7 @@ public class Iface
     /**---------------------------------putters:放入（不阻塞）-------------------------------------*/
 
 
-    // 由 LinkLayer 放入数据包
+    // 由 Net 放入数据包
     public void offerInputPacket(Ethernet etherPacket) {
         if(inputQueue.offer(etherPacket)){
             System.out.println(this.iName + " succeed in receiving Ether packet: " + etherPacket);
@@ -74,7 +74,7 @@ public class Iface
         return inputQueue.peek();
     }
 
-    // 由 LinkLayer 查看数据包
+    // 由 Net 查看数据包
     public Ethernet peekOutputPacket() {
         return outputQueue.peek();
     }
@@ -88,7 +88,7 @@ public class Iface
         return inputQueue.poll();
     }
 
-    // 由 LinkLayer 取出数据包
+    // 由 Net 取出数据包
     public Ethernet pollOutputPacket() {
         return outputQueue.poll();
     }

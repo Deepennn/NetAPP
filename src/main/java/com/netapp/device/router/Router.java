@@ -8,8 +8,8 @@ import com.netapp.packet.*;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.netapp.config.Constant.ROUTE_TABLE_PREFFIX;
-import static com.netapp.config.Constant.ROUTE_TABLE_SUFFIX;
+import static com.netapp.config.DeviceConfig.ROUTE_TABLE_PREFFIX;
+import static com.netapp.config.DeviceConfig.ROUTE_TABLE_SUFFIX;
 
 public class Router extends NetDevice {
 
