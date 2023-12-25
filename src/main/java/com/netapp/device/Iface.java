@@ -26,7 +26,7 @@ public class Iface
         try {
             inputQueue.put(etherPacket);
         } catch (InterruptedException e) {
-            System.out.println(this.iName + " blocked a receiving Ether packet: " + etherPacket);
+//            System.out.println(this.iName + " blocked a receiving Ether packet: " + etherPacket);
             e.printStackTrace();
         }
     }
@@ -35,7 +35,7 @@ public class Iface
     public void putOutputPacket(Ethernet etherPacket) {
         System.out.println(this.iName + " is sending Ether packet: " + etherPacket);
         try {
-            System.out.println(this.iName + " blocked a sending Ether packet: " + etherPacket);
+//            System.out.println(this.iName + " blocked a sending Ether packet: " + etherPacket);
             outputQueue.put(etherPacket);
         } catch (InterruptedException e) {
             e.printStackTrace();

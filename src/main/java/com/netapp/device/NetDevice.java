@@ -45,8 +45,16 @@ public abstract class NetDevice extends Device
         System.out.println(this.hostname + " is receiving Ether packet: " + etherPacket.toString());
 
         /********************************************************************/
-        /* 处理数据包                                               */
 
+        /* 检验校验和                                               */
+        int origCksum = etherPacket.getChecksum();
+        etherPacket.updateChecksum();
+        int calcCksum = etherPacket.getChecksum();
+        if (origCksum != calcCksum) {
+            System.out.println(this.hostname + " found Ether packet's checksum is wrong: ");
+            return;
+        }
+        /* 处理数据包                                               */
         switch (etherPacket.getEtherType()) {
             case Ethernet.TYPE_IPv4:
                 this.handleIPPacket(etherPacket, inIface);
@@ -175,7 +183,7 @@ public abstract class NetDevice extends Device
         try {
             nextHopQueue.put(etherPacket);
         } catch (InterruptedException e) {
-            System.out.println(this.hostname + " blocked a sending Ether packet: " + etherPacket);
+//            System.out.println(this.hostname + " blocked a sending Ether packet: " + etherPacket);
             e.printStackTrace();
         }
 

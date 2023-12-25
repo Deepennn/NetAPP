@@ -19,20 +19,18 @@ public class APP {
         // 创建Scanner
         Scanner scanner = new Scanner(System.in);
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        System.out.println("    WELCOME TO NET LAYER!");
         System.out.println(
-                "    WELCOME TO NET LAYER!\n" +
-                        "    YOU ARE NOW `h1` IN THE NET TOPO AS BELOW:\n"
-        );
-        System.out.println(
-                "    ```````````````````NET TOPO`````````````````\n" +
-                        "    h1   <===>         r1        <===> h2\n" +
-                        "    h1_i <---> [ r1_i1 , r1_i2 ] <---> h2_i\n" +
-                        "    ^                                      \n" +
-                        "   ```````````````````````````````````````````````````"
+                "    ```````````````````NET TOPO```````````````````````\n" +
+                "    h1   <===>         r1        <===> h2\n" +
+                "    h1_i <---> [ r1_i1 , r1_i2 ] <---> h2_i\n" +
+                "   ```````````````````````````````````````````````````"
         );
         System.out.print(
+                "    @TEST: h1 -> r1 ->h2\n" +
+                "    YOU ARE NOW `h1` IN THE NET TOPO AS ABOVE\n" +
                 "    TRY SEND A MESSAGE TO `h2`!\n" +
-                        "    INPUT YOUR(`h1`'s) MESSAGE HERE: "
+                "    INPUT YOUR(`h1`'s) MESSAGE HERE: "
         );
         // 读取用户输入的 MESSAGE
         String message = scanner.nextLine();

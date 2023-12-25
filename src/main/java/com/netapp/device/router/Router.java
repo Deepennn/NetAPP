@@ -46,6 +46,7 @@ public class Router extends NetDevice {
         ipPacket.updateChecksum();
         int calcCksum = ipPacket.getChecksum();
         if (origCksum != calcCksum) {
+            System.out.println(this.hostname + " found IP packet's checksum is wrong: ");
             return;
         }
 
@@ -137,6 +138,7 @@ public class Router extends NetDevice {
         } else
             etherPacket.setDestinationMAC(arpEntry.getMac());
 
+        etherPacket.updateChecksum();
         this.sendPacket(etherPacket, outIface);
     }
 
@@ -163,8 +165,8 @@ public class Router extends NetDevice {
 
         ether.setEtherType(Ethernet.TYPE_IPv4);
 
-        byte d = 64;
-        ip.setTtl(d);
+        int ttl = 64;
+        ip.setTtl(ttl);
         ip.setProtocol(IPv4.PROTOCOL_ICMP);
         ip.setDestinationIP(((IPv4) (etherPacket.getPayload())).getSourceIP());
 
@@ -205,6 +207,7 @@ public class Router extends NetDevice {
         } else
             ether.setDestinationMAC(arpEntry.getMac());
 
+        ether.updateChecksum();
         this.sendPacket(ether, outIface);
     }
 
