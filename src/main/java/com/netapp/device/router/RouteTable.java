@@ -65,9 +65,20 @@ public class RouteTable {
 
             // 初始化最佳匹配为null
             RouteEntry bestMatch = null;
+            // 初始化默认匹配为null
+            RouteEntry defaultMatch = null;
 
             // 遍历所有路由条目
             for (RouteEntry entry : this.entries) {
+
+                // 暂时忽略默认网关
+                if(entry.getDestinationAddress().equals(IPv4.DEFAULT_IP) &&
+                        entry.getMaskAddress().equals(IPv4.DEFAULT_IP))
+                {
+                    defaultMatch = entry;
+                    continue;
+                }
+
                 // 使用路由条目的掩码对目标IP进行掩码操作
                 int maskedDst = ip &
                         IPv4.toIPv4Address(entry.getMaskAddress());
@@ -84,6 +95,12 @@ public class RouteTable {
                         bestMatch = entry; // 更新最佳匹配
                     }
                 }
+            }
+
+            // 如果找不到最佳匹配， 则最佳匹配就是默认匹配
+            if(bestMatch == null){
+                bestMatch = defaultMatch;
+                System.out.println("Can't find best match, best match set: " + defaultMatch);
             }
 
             return bestMatch; // 返回最佳匹配的路由条目

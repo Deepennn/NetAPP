@@ -112,6 +112,7 @@ public abstract class NetDevice extends Device
                 while(packetsToSend != null && packetsToSend.peek() != null){
                     Ethernet packet = packetsToSend.poll();
                     packet.setDestinationMAC(arpPacket.getSenderHardwareAddress());
+                    packet.updateChecksum();
                     this.sendPacket(packet, inIface);
                 }
             }
@@ -142,6 +143,7 @@ public abstract class NetDevice extends Device
 
         System.out.println(this.hostname + " is sending ARP packet:" + ether);
 
+        ether.updateChecksum();
         this.sendPacket(ether, inIface);
         return;
     }
@@ -171,6 +173,7 @@ public abstract class NetDevice extends Device
 
         atomicEtherPacket.get().setPayload(arp);
         atomicEtherPacket.get().setDestinationMAC(Ethernet.BROADCAST_MAC); // 广播 ARP 请求数据包
+        atomicEtherPacket.get().updateChecksum();
 
 
         if (!outputQueueMap.containsKey(dstIp)) {
@@ -201,20 +204,20 @@ public abstract class NetDevice extends Device
                         System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
                         return;
                     }
-//                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
-//                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
-//                    Thread.sleep(1000);
-//                    if (atomicCache.get().lookup(dstIp) != null) {
-//                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
-//                        return;
-//                    }
-//                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
-//                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
-//                    Thread.sleep(1000);
-//                    if (atomicCache.get().lookup(dstIp) != null) {
-//                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
-//                        return;
-//                    }
+                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
+                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
+                    Thread.sleep(1000);
+                    if (atomicCache.get().lookup(dstIp) != null) {
+                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
+                        return;
+                    }
+                    System.out.println(hostname + " is sending ARP packet:" + atomicEtherPacket.get());
+                    sendPacket(atomicEtherPacket.get(), atomicIface.get());
+                    Thread.sleep(1000);
+                    if (atomicCache.get().lookup(dstIp) != null) {
+                        System.out.println(hostname + ": Found it: " + atomicCache.get().lookup(dstIp));
+                        return;
+                    }
 
                     // 都发了 3 次了，实在是真的是找不着 MAC，那就放弃吧，发送一个`目的主机不可达`的 ICMP
                     System.out.println(hostname + ": Not found: " + dstIp);

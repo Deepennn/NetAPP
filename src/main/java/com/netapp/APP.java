@@ -40,7 +40,7 @@ public class APP {
         /**
          * h1 -> h2               @TEST: h1 -> r1 ->h2
          * */
-        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
+//        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
 
         /**
          * h2 -> h1               @TEST: h2 -> r1 ->h1
@@ -50,10 +50,10 @@ public class APP {
         /**
          * h1 -> r1               @TEST: h1 -> r1
          * */
-//        net.service.sendIPPacket(H1_HOSTNAME, R1_I1_IP, message, 64);
+        net.service.sendIPPacket(H1_HOSTNAME, R1_I1_IP, message, 64);
 
         /**
-         *  h1 -> ?                @TEST: ICMP_DESTINATION_NETWORK_UNREACHABLE
+         *  h1 -> ?                @TEST: FORWARD_DEFAULT_GATEWAY //@TEST: ICMP_DESTINATION_NETWORK_UNREACHABLE
          * */
 //        net.service.sendIPPacket(H1_HOSTNAME,"1.1.1.1", message, 64);
 
@@ -68,10 +68,10 @@ public class APP {
          *  DELETE THE ENTRY `1.0.0.1 00:11:22:33:44:55`
          *  IN THE FILE `src/main/resources/config/arp_cache/h1.ac`
          *  MANUALLY,
-         *  MAKE SURE THERE IS <=1 BLANK LINES AT THE BOTTOM
+         *  MAKE SURE THERE IS <=1 BLANK LINE AT THE BOTTOM
          *  AND TRY THIS AGAIN:
          *  */
-//        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
+        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
 
         // 关闭Scanner
         scanner.close();

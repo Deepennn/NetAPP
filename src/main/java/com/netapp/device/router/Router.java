@@ -105,11 +105,15 @@ public class Router extends NetDevice {
         // 查找匹配的路由表项
         RouteEntry bestMatch = this.routeTable.lookup(dstIp);
 
+        // 这种情况会转发到默认网关
+        /*
         // 如果没有匹配的项，则什么也不做
         if (null == bestMatch) {
             this.sendICMPPacket(etherPacket, inIface, 3, 0, false);
             return;
         }
+
+         */
 
         // 确保不将数据包发送回它进入的接口
         NetIface outIface = (NetIface) bestMatch.getInterface();
