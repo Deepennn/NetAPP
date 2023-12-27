@@ -102,7 +102,7 @@ public class Host extends NetDevice {
 
         System.out.println(this.hostname + " is sending IP packet: " + ip);
 
-        ether.setSourceMAC(((NetIface)outIface).getMacAddress());
+        ether.setSourceMAC(outIface.getMacAddress());
 
         String nextHop = null;
         // 判断属不属于自己所属子网：
@@ -169,14 +169,14 @@ public class Host extends NetDevice {
         Iface outIface = this.getDefaultInterface();
 
         // 在 ICMP Echo 回应中：源 IP 是上一次请求的接收方主机的 IP 地址
-        ip.setSourceIP(echo ? ipPacket.getDestinationIP() : ((NetIface)inIface).getMacAddress());
+        ip.setSourceIP(echo ? ipPacket.getDestinationIP() : inIface.getMacAddress());
 
         // 更新校验和
         ip.updateChecksum();
 
         System.out.println(this.hostname + " is sending ICMP packet:" + ether);
 
-        ether.setSourceMAC(((NetIface)inIface).getMacAddress());
+        ether.setSourceMAC(inIface.getMacAddress());
 
         String nextHop = null;
         // 判断属不属于自己所属子网：

@@ -6,6 +6,7 @@ import com.netapp.packet.Ethernet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -122,19 +123,19 @@ public abstract class NetDevice extends Device
         // ARP 请求数据包
 
         String targetIp = arpPacket.getTargetProtocolAddress();
-        if (targetIp != ((NetIface)inIface).getIpAddress()) // 不是对应接口 IP 则不处理
+        if (!Objects.equals(targetIp, ((NetIface) inIface).getIpAddress())) // 不是对应接口 IP 则不处理
             return;
 
         Ethernet ether = new Ethernet();
         ether.setEtherType(Ethernet.TYPE_ARP);
-        ether.setSourceMAC(((NetIface)inIface).getMacAddress());
+        ether.setSourceMAC(inIface.getMacAddress());
         ether.setDestinationMAC(etherPacket.getSourceMAC());
 
         ARP arp = new ARP();
         arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
         arp.setProtocolType(ARP.PROTO_TYPE_IP);
         arp.setOpCode(ARP.OP_REPLY);
-        arp.setSenderHardwareAddress(((NetIface)inIface).getMacAddress());
+        arp.setSenderHardwareAddress(inIface.getMacAddress());
         arp.setSenderProtocolAddress(((NetIface)inIface).getIpAddress());
         arp.setTargetHardwareAddress(arpPacket.getSenderHardwareAddress());
         arp.setTargetProtocolAddress(arpPacket.getSenderProtocolAddress());
@@ -159,7 +160,7 @@ public abstract class NetDevice extends Device
         arp.setHardwareType(ARP.HW_TYPE_ETHERNET);
         arp.setProtocolType(ARP.PROTO_TYPE_IP);
         arp.setOpCode(ARP.OP_REQUEST);
-        arp.setSenderHardwareAddress(((NetIface)outIface).getMacAddress());
+        arp.setSenderHardwareAddress(outIface.getMacAddress());
         arp.setSenderProtocolAddress(((NetIface)outIface).getIpAddress());
         arp.setTargetHardwareAddress(null);
         arp.setTargetProtocolAddress(dstIp);
@@ -169,7 +170,7 @@ public abstract class NetDevice extends Device
         final AtomicReference<Ethernet> atomicInPacket = new AtomicReference<>(etherPacket);
 
         atomicEtherPacket.get().setEtherType(Ethernet.TYPE_ARP);
-        atomicEtherPacket.get().setSourceMAC(((NetIface)outIface).getMacAddress());
+        atomicEtherPacket.get().setSourceMAC(outIface.getMacAddress());
 
         atomicEtherPacket.get().setPayload(arp);
         atomicEtherPacket.get().setDestinationMAC(Ethernet.BROADCAST_MAC); // 广播 ARP 请求数据包

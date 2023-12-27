@@ -116,7 +116,7 @@ public class Router extends NetDevice {
          */
 
         // 确保不将数据包发送回它进入的接口
-        NetIface outIface = (NetIface) bestMatch.getInterface();
+        Iface outIface =  bestMatch.getInterface();
         if (outIface == inIface) {
             return;
         }
@@ -186,7 +186,7 @@ public class Router extends NetDevice {
         Iface outIface = bestMatch.getInterface();
 
         // 在 ICMP Echo 回应中：源 IP 是上一次请求的接收方主机的 IP 地址
-        ip.setSourceIP(echo ? ipPacket.getDestinationIP() : ((NetIface)inIface).getMacAddress());
+        ip.setSourceIP(echo ? ipPacket.getDestinationIP() : inIface.getMacAddress());
 
         // 更新校验和
         ip.updateChecksum();
@@ -194,7 +194,7 @@ public class Router extends NetDevice {
         System.out.println(this.hostname + " is sending ICMP packet:" + ether);
 
         // echo 是返回原子网
-        ether.setSourceMAC(((NetIface)inIface).getMacAddress());
+        ether.setSourceMAC(inIface.getMacAddress());
 
         String nextHop = bestMatch.getGatewayAddress();
         if (IPv4.DEFAULT_IP.equals(nextHop)) {

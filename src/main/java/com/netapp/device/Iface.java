@@ -8,12 +8,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Iface
 {
     protected String iName;            // 接口名称
+    protected String macAddress;  // MAC地址
 
     protected BlockingQueue<Ethernet> inputQueue; // 输入队列
     protected BlockingQueue<Ethernet> outputQueue; // 输出队列
 
-    public Iface(String iName) {
+    public Iface(String iName, String macAddress) {
         this.iName = iName;
+        this.macAddress = macAddress;
         this.inputQueue = new LinkedBlockingQueue<>();
         this.outputQueue = new LinkedBlockingQueue<>();
     }
@@ -100,6 +102,14 @@ public class Iface
 
     public void setiName(String iName) {
         this.iName = iName;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
     public BlockingQueue<Ethernet> getInputQueue() {

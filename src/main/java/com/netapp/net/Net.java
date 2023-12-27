@@ -84,21 +84,21 @@ public class Net implements Runnable{
                             // 查找 MAC 匹配的接口
                             for (Iface lkdIface : lkdIfaces){
                                 if( lkdIface instanceof NetIface ){
-                                    // lkdIface 是网络层设备
-                                    if(((NetIface)lkdIface).getMacAddress().equals(etherPacket.getDestinationMAC())){
+                                    // lkdIface 是网络层设备，需辨别 MAC
+                                    if(lkdIface.getMacAddress().equals(etherPacket.getDestinationMAC())){
                                         lkdIface.putInputPacket(etherPacket);
                                     }
                                     else {
                                         System.out.println(
                                                 "`````````````````Net: " +
-                                                ((NetIface)lkdIface).getMacAddress() +
+                                                lkdIface.getMacAddress() +
                                                 " != " +
                                                 etherPacket.getDestinationMAC()
                                         );
                                     }
                                 }
                                 else{
-                                    // lkdIface 是链路层交换机
+                                    // lkdIface 是链路层交换机，不需辨别 MAC
                                     lkdIface.putInputPacket(etherPacket);
                                 }
                             }
@@ -237,6 +237,13 @@ public class Net implements Runnable{
     }
 
     public class Service{
+        /**
+         * 网络服务代理发送 IP 数据包的标准方法
+         * @param hostname 发送者的主机名
+         * @param destIp 目的 IP
+         * @param message 模拟传输层数据包的信息
+         * @param ttl TTL
+         * */
         public void sendIPPacket(String hostname, String destIp, String message, int ttl){
             Device device = devices.get(hostname);
             if (device != null){
