@@ -108,7 +108,7 @@ public class Router extends NetDevice {
 
         // 这种情况会转发到默认网关
         /*
-        // 如果没有匹配的项，则什么也不做
+        // 如果没有匹配的项，则发 ICMP
         if (null == bestMatch) {
             this.sendICMPPacket(etherPacket, inIface, 3, 0, false);
             return;
@@ -126,7 +126,7 @@ public class Router extends NetDevice {
         String srcMac = outIface.getMacAddress();
         etherPacket.setSourceMAC(srcMac);
 
-        // 如果没有网关，那么下一跳是 IP 目的地，设置目的 MAC 的时候可以直接设置目的地的MAC，否则设置网关的MAC
+        // 如果没有网关，那么下一跳是目的地 IP ，设置目的 MAC 的时候可以直接设置目的地的MAC，否则设置网关的MAC
         String nextHop = bestMatch.getGatewayAddress();
         if (IPv4.DEFAULT_IP.equals(nextHop)) {
             nextHop = dstIp;

@@ -40,7 +40,7 @@ public class APP {
         /**
          * h1 -> h2               @TEST: h1 -> r1 ->h2
          * */
-//        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
+        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
 
         /**
          * h2 -> h1               @TEST: h2 -> r1 ->h1
@@ -74,7 +74,7 @@ public class APP {
          *  MAKE SURE THERE IS <=1 BLANK LINE AT THE BOTTOM
          *  AND TRY THIS AGAIN:
          *  */
-        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
+//        net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
 
 
         //@TEST: ICMP_DESTINATION_NETWORK_UNREACHABLE

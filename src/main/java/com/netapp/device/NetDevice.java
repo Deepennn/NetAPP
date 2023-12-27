@@ -46,6 +46,12 @@ public abstract class NetDevice extends Device
 
         /********************************************************************/
 
+        /* 检验 MAC                                               */
+        if(!inIface.getMacAddress().equals(etherPacket.getDestinationMAC()) &&
+                !etherPacket.isBroadcast()){
+            return;
+        }
+
         /* 检验校验和                                               */
         int origCksum = etherPacket.getChecksum();
         etherPacket.updateChecksum();
