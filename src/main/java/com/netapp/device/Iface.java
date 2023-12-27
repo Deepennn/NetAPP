@@ -9,7 +9,6 @@ public class Iface
 {
     protected String iName;            // 接口名称
     protected String macAddress;  // MAC地址
-
     protected BlockingQueue<Ethernet> inputQueue; // 输入队列
     protected BlockingQueue<Ethernet> outputQueue; // 输出队列
 

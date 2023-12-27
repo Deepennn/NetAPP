@@ -30,7 +30,7 @@ public class APP {
                 "    @TEST: h1 -> r1 ->h2\n" +
                 "    YOU ARE NOW `h1` IN THE NET TOPO AS ABOVE\n" +
                 "    TRY SEND A MESSAGE TO `h2`!\n" +
-                "    INPUT YOUR(`h1`'s) MESSAGE HERE: "
+                "    INPUT YOUR MESSAGE HERE: "
         );
         // 读取用户输入的 MESSAGE
         String message = scanner.nextLine();
@@ -50,10 +50,10 @@ public class APP {
         /**
          * h1 -> r1               @TEST: h1 -> r1
          * */
-        net.service.sendIPPacket(H1_HOSTNAME, R1_I1_IP, message, 64);
+//        net.service.sendIPPacket(H1_HOSTNAME, R1_I1_IP, message, 64);
 
         /**
-         *  h1 -> ?                @TEST: FORWARD_DEFAULT_GATEWAY //@TEST: ICMP_DESTINATION_NETWORK_UNREACHABLE
+         *  h1 -> ?                @TEST: FORWARD_DEFAULT_GATEWAY
          * */
 //        net.service.sendIPPacket(H1_HOSTNAME,"1.1.1.1", message, 64);
 
@@ -64,6 +64,9 @@ public class APP {
 
         /**
          *  h1 ?-> h2              @TEST: ARP_REQ
+         *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          *  NOTIFICATION:
          *  DELETE THE ENTRY `1.0.0.1 00:11:22:33:44:55`
          *  IN THE FILE `src/main/resources/config/arp_cache/h1.ac`
@@ -72,6 +75,9 @@ public class APP {
          *  AND TRY THIS AGAIN:
          *  */
         net.service.sendIPPacket(H1_HOSTNAME, H2_I_IP, message, 64);
+
+
+        //@TEST: ICMP_DESTINATION_NETWORK_UNREACHABLE
 
         // 关闭Scanner
         scanner.close();

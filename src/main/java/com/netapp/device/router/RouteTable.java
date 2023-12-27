@@ -100,7 +100,7 @@ public class RouteTable {
             // 如果找不到最佳匹配， 则最佳匹配就是默认匹配
             if(bestMatch == null){
                 bestMatch = defaultMatch;
-                System.out.println("Can't find best match, best match set: " + defaultMatch);
+                System.out.println("Can't find best match, best match set default match: " + defaultMatch);
             }
 
             return bestMatch; // 返回最佳匹配的路由条目
