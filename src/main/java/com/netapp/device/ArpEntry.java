@@ -1,4 +1,4 @@
-package com.netapp.device.router;
+package com.netapp.device;
 
 /**
  * ARP表中的条目，将IP地址映射到MAC地址。

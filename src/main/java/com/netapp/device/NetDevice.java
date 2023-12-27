@@ -1,6 +1,5 @@
 package com.netapp.device;
 
-import com.netapp.device.router.ArpCache;
 import com.netapp.packet.ARP;
 import com.netapp.packet.Ethernet;
 

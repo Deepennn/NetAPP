@@ -1,4 +1,4 @@
-package com.netapp.device.router;
+package com.netapp.device;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

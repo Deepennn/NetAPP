@@ -1,5 +1,6 @@
 package com.netapp.device.router;
 
+import com.netapp.device.ArpEntry;
 import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
 import com.netapp.device.NetIface;

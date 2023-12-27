@@ -77,11 +77,11 @@ public abstract class Device implements Runnable
     /**
      * 添加设备的一个接口。
      * @param ifaceName 接口的名称
+     * @param iface 接口
      * @return 添加的接口对象
      */
-    public Iface addInterface(String ifaceName)
+    public Iface addInterface(String ifaceName, Iface iface)
     {
-        Iface iface = new Iface(ifaceName);
         this.interfaces.put(ifaceName, iface);
         return iface;
     }

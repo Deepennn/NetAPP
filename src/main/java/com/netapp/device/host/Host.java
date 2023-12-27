@@ -3,7 +3,7 @@ package com.netapp.device.host;
 import com.netapp.device.Iface;
 import com.netapp.device.NetDevice;
 import com.netapp.device.NetIface;
-import com.netapp.device.router.ArpEntry;
+import com.netapp.device.ArpEntry;
 import com.netapp.packet.*;
 
 import java.util.Map;
