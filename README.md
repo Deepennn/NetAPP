@@ -30,7 +30,7 @@
 
 以下是参考UML类图关系线但还没标注属性的网络抽象图，需要特殊说明的关系线是，无箭头实线代表 “类-实例” 关系：
 
-![NetAPP抽象图（net）](img\NetAPP抽象图（net）.png)
+![NetAPP抽象图（net）](./img/NetAPP抽象图（net）.png)
 
 ### 1.2 网络设计与实现
 
@@ -153,7 +153,7 @@
 
 以下是网络的数据流图，示例是h1发送给r1，实线箭头代表了数据包的流向：
 
-![NetAPP网络数据流](img\NetAPP网络数据流.png)
+![NetAPP网络数据流](./img/NetAPP网络数据流.png)
 
 以下是`Net.java` 中`run(...)`函数的网络轮巡代码：
 
@@ -538,7 +538,7 @@ while(true){
 
 #### 以下是路由器的工作流程图：
 
-![NetAPP流程图](img\NetAPP流程图.png)
+![NetAPP流程图](./img/NetAPP流程图.png)
 
 #### 以下是任务书要求的关键控制流解释：
 
@@ -1490,7 +1490,7 @@ this.sendPacket(etherPacket, outIface);
 
 本网络所涉及的协议仅限于链路层和网络层，按网络层级划分和负载所属关系可得如下结果：
 
-![NetAPP抽象图（packet）](img\NetAPP抽象图（packet）.png)
+![NetAPP抽象图（packet）](./img/NetAPP抽象图（packet）.png)
 
 所有的数据包都继承自基本数据包，它们的共性是都具有有效负载，父级包可以通过协议号解析并通过获取负载得到子级包。
 
@@ -1653,7 +1653,7 @@ this.sendPacket(etherPacket, outIface);
 
 测试结果：
 
-![常规运行结果](img\常规运行结果.png)
+![常规运行结果](./img/常规运行结果.png)
 
 ```java
     INPUT YOUR MESSAGE HERE: hi :)
@@ -1691,7 +1691,7 @@ h2 accepted message: hi :)
 
 测试结果：
 
-![超时运行结果](img/超时运行结果.png)
+![超时运行结果](./img/超时运行结果.png)
 
 ```java
     INPUT YOUR MESSAGE HERE: hi :>
@@ -1728,7 +1728,7 @@ h1 accepted message: ICMP{icmpType=11, icmpCode=0, checksum=6545, payload=Data{d
 
 测试结果：
 
-![路由表项缺失运行结果](img/路由表项缺失运行结果.png)
+![路由表项缺失运行结果](./img/路由表项缺失运行结果.png)
 
 ```java
     INPUT YOUR MESSAGE HERE: hi :D
@@ -1751,7 +1751,7 @@ Can't find best match, best match set default match: 0.0.0.0 	0.0.0.0 	0.0.0.0 	
 
 注意：需要先删除  `src/main/resources/config/arp_cache/h1.ac`  中的 `1.0.0.1 00:11:22:33:44:55` 条目，并删除空行，保证底部最多有一个空行。
 
-![ARP缓存项缺失运行条件](img/ARP缓存项缺失运行条件.png)
+![ARP缓存项缺失运行条件](./img/ARP缓存项缺失运行条件.png)
 
 ```java
 /**
@@ -1773,7 +1773,7 @@ Can't find best match, best match set default match: 0.0.0.0 	0.0.0.0 	0.0.0.0 	
 
 测试结果：
 
-![ARP缓存项缺失运行结果](img\ARP缓存项缺失运行结果.png)
+![ARP缓存项缺失运行结果](./img/ARP缓存项缺失运行结果.png)
 
 ```java
     INPUT YOUR MESSAGE HERE: hi :]
